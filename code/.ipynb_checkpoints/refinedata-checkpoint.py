@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
 import pandas as pd
+import sys
 
-df.read_csv('../data/Scotland_teaching_file_1PCT.csv')
+"""
+The purpose of this script is to refine the data from the csv 'Scotland_teaching_file_1PCT.csv'.
+In short the script: removes duplicates; confirms the data types for each variable; removes rows with null values; 
+and lastly checks if the values of variables are within the range of the dataset, if not they will be removed from the refined csv.
+"""
 
 def drop_duplicates(df, subset=['Record_Number'], keep=False):
     """
@@ -16,17 +21,15 @@ def drop_duplicates(df, subset=['Record_Number'], keep=False):
     dropped_duplicates = df.drop_duplicates(subset='Record_Number', keep=keep)
     dropped_length = len(dropped_duplicates)
     if original_length != dropped_length:
-        print("No Duplicates were found and dropped")
+        print("No Duplicates were found and dropped!!")
         return True
     else:
-        print("No Duplicates were found")
+        print("No Duplicates were found!!")
         return False 
-dropped_duplicates = drop_duplicates(df)
-print(dropped_duplicates)
 
 def check_format(df):
     """
-    The check_format function reiterates the column dtypes
+    The check_format function reiterates the column dtypes.
     """
     for column in df.columns:
         if df[column].dtype == 'int64':
@@ -34,7 +37,6 @@ def check_format(df):
         elif df[column].dtype == 'object':
             print(f"{column}: object")
             
-check_format(df)
 
 def remove_null_rows(df):
     """
@@ -42,11 +44,10 @@ def remove_null_rows(df):
     """
     remove_null_rows = df.dropna()
     return df.dropna()
-    
-remove_null_rows(df)
+
 
 def check_values_of_variables_are_admissible(df):
-    # Convert the string obj dtype values to string
+    # Convert the object dtype values to string
     df["Family_Composition"] = df["Family_Composition"].astype(str)
     df["Economic_Activity"] = df["Economic_Activity"].astype(str)
     df["Occupation"] = df["Occupation"].astype(str)
@@ -76,11 +77,21 @@ def check_values_of_variables_are_admissible(df):
     df = df[(df["Approximate_Social_Grade"].between("1", "4")) | (df["Approximate_Social_Grade"] == 'X')]
 
     return df
-check_values_of_variables_are_admissible(df)        
-   
-
-df.to_csv('../data/Refined_data_Scotland_teaching_file_1PCT.csv', index=False)
 
 if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        sys.exit(1)
+    print("refinedata.py <../data/Scotland_teaching_file_1PCT.csv>")
 
+    input_file = sys.argv[0]
+    output_file = '../data/Refined_Scotland_teaching_file_1PCT.csv'
+
+    df = pd.read_csv('../data/Scotland_teaching_file_1PCT.csv')
     
+    drop_duplicates(df)
+    check_format(df)
+    df = remove_null_rows(df)
+    df = check_values_of_variables_are_admissible(df)
+    
+    df.to_csv(output_file, index=False)
+    print(f"Refined data saved to {'../data/Refined_Scotland_teaching_file_1PCT.csv'}")
