@@ -47,20 +47,21 @@ def remove_null_rows(df):
 
 
 def check_values_of_variables_are_admissible(df):
-    # Convert the object dtype values to string
-    df["Family_Composition"] = df["Family_Composition"].astype(str)
-    df["Economic_Activity"] = df["Economic_Activity"].astype(str)
-    df["Occupation"] = df["Occupation"].astype(str)
-    df["industry"] = df["industry"].astype(str)
-    df["Hours_Worked_Per_Week"] = df["Hours_Worked_Per_Week"].astype(str)
-    df["Approximate_Social_Grade"] = df["Approximate_Social_Grade"].astype(str)
-   
     """
-    The check_values_of_variables_are_admissible function scans over the DataFrame,
-    ensuring that the values of variables match the assigned range.
+    The value checker function firstly converts all the columns which are of the object dtype, containing both string and int values to dtype: str.
+    After doing so the function will check that the values of variables are within the given range from the "Teaching_File_Variable_List.xlsx" documentation.
     """
+    # Columns that need to be converted to string
+    str_columns = [
+        "Family_Composition", "Economic_Activity", "Occupation",
+        "industry", "Hours_Worked_Per_Week", "Approximate_Social_Grade"
+    ]
     
-    df = df[(df["RESIDENCE_TYPE"].isin(['P','C']))] 
+    # Convert specified columns to string
+    df[str_columns] = df[str_columns].astype(str)
+
+    # Filter conditions for various variables
+    df = df[(df["RESIDENCE_TYPE"].isin(['P', 'C']))]
     df = df[(df["Family_Composition"].between("0", "5")) | (df["Family_Composition"] == 'X')]
     df = df[(df["sex"].between(1, 2))]
     df = df[(df["age"].between(1, 8))]
@@ -70,11 +71,11 @@ def check_values_of_variables_are_admissible(df):
     df = df[(df["health"].between(1, 5))]
     df = df[(df["Ethnic_Group"].between(1, 6))]
     df = df[(df["religion"].between(1, 9))]
-    df = df[(df["Economic_Activity"].between("1", "9")) | (df["Economic_Activity"] == 'X')]
-    df = df[(df["Occupation"].between("1", "9")) | (df["Occupation"] == 'X')]
-    df = df[(df["industry"].between("1", "13")) | (df["industry"] == 'X')]
-    df = df[(df["Hours_Worked_Per_Week"].between("1", "4")) | (df["Hours_Worked_Per_Week"] == 'X')]
-    df = df[(df["Approximate_Social_Grade"].between("1", "4")) | (df["Approximate_Social_Grade"] == 'X')]
+    df = df[df["industry"].isin(['X'] + list(map(str, range(1, 14))))]
+    df = df[df["Economic_Activity"].isin(['X'] + list(map(str, range(1, 10))))]
+    df = df[df["Occupation"].isin(['X'] + list(map(str, range(1, 10))))]
+    df = df[df["Hours_Worked_Per_Week"].isin(['X'] + list(map(str, range(1, 5))))]
+    df = df[df["Approximate_Social_Grade"].isin(['X'] + list(map(str, range(1, 5))))]
 
     return df
 
