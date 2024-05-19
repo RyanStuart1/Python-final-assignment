@@ -36,7 +36,8 @@ def check_format(df):
             print(f"{column}: integer")
         elif df[column].dtype == 'object':
             print(f"{column}: object")
-            
+        else:
+            print(f"{column}: {df[column].dtype}")         
 
 def remove_null_rows(df):
     """
